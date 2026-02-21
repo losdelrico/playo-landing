@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PLAYO – Spieltermine einfach koordinieren</title>
+  <meta name="description" content="PLAYO verbindet Familien. Sieh sofort, wann Kinder im Umfeld spielen können – stressfrei, privat und kostenlos." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --violet:      #7C3AED;
+      --violet-dark: #4C1D95;
+      --violet-deep: #0D0820;
+      --violet-mid:  #1a0f3a;
+      --violet-soft: #F5F0FF;
+      --orange:      #F97316;
+      --orange-soft: #FFF4EC;
+      --white:       #FFFFFF;
+      --gray-100:    #F9F8FC;
+      --gray-200:    #EDE9F6;
+      --gray-500:    #8B7DB8;
+      --gray-700:    #4B4365;
+      --gray-900:    #1A1530;
+      --font-head:   'Nunito', sans-serif;
+      --font-body:   'Plus Jakarta Sans', sans-serif;
+      --radius-xl:   24px;
+      --radius-2xl:  32px;
+      --shadow-card: 0 4px 24px rgba(76, 29, 149, 0.10);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--gray-900);
+      background: var(--white);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { display: block; max-width: 100%; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ─── Utility ──────────────────────────────────────────────── */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(124, 58, 237, 0.10);
+      color: var(--violet);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(124, 58, 237, 0.18);
+    }
+
+    .badge-dark {
+      background: rgba(255,255,255, 0.10);
+      color: rgba(255,255,255, 0.80);
+      border-color: rgba(255,255,255, 0.15);
+    }
+
+    /* ─── Scroll Reveal ─────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s cubic-bezier(.22,1,.36,1), transform 0.7s cubic-bezier(.22,1,.36,1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.10s; }
+    .reveal-delay-2 { transition-delay: 0.20s; }
+    .reveal-delay-3 { transition-delay: 0.30s; }
+    .reveal-delay-4 { transition-delay: 0.40s; }
+
+    /* ─── NAV ───────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      padding: 0 32px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.4s, backdrop-filter 0.4s, box-shadow 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(8, 4, 24, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .nav-logo-text {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 22px;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo-text span { color: var(--orange); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--violet);
+      color: white;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: #6d28d9; transform: translateY(-1px); }
+
+    /* ─── HERO SCROLL-PIN ────────────────────────────────────────── */
+    #hero-scroll {
+      height: 180vh;
+      background: var(--violet-deep);
+      position: relative;
+    }
+
+    .hero-sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--violet-deep);
+    }
+
+    /* grid texture */
+    .hero-sticky::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ambient glow blobs */
+    .hero-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .hero-blob-1 {
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(124,58,237,0.50) 0%, transparent 70%);
+      top: -200px; left: -200px;
+    }
+    .hero-blob-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(249,115,22,0.25) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+    }
+
+    /* ── Big headline ── */
+    .hero-headline {
+      position: absolute;
+      top: 28%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 1;
+      width: 100%;
+      max-width: 1060px;
+      padding: 0 32px;
+      will-change: opacity, transform;
+    }
+
+    .hero-mega-title {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: clamp(52px, 7vw, 96px);
+      line-height: 1.0;
+      letter-spacing: -3px;
+      color: white;
+    }
+    .hero-mega-title .accent { color: var(--orange); }
+
+    /* ── iPhone Mockup ── */
+    .hero-phone-anchor {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      margin-left: -215px;
+      margin-top:  -437px;
+      z-index: 2;
+      will-change: transform;
+    }
+
+    .phone-glow {
+      position: absolute;
+      inset: -80px;
+      background: radial-gradient(ellipse at center, rgba(124,58,237,0.40) 0%, transparent 65%);
+      border-radius: 50%;
+      filter: blur(60px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .iphone-frame-wrap {
+      position: relative;
+      z-index: 1;
+      width: 430px;
+      height: 875px;
+      filter:
+        drop-shadow(0 60px 100px rgba(0,0,0,0.80))
+        drop-shadow(0 20px 50px rgba(124,58,237,0.30));
+    }
+
+    /* App screenshot — sits behind the frame overlay */
+    .hero-screen-img {
+      position: absolute;
+      left: 5.22%;
+      top: 2.15%;
+      width: 89.56%;
+      height: 95.70%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+      z-index: 1;
+    }
+
+    /* Frame image overlay — transparent screen area, opaque border */
+    .iphone-frame {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+
+    /* second phone (showcase) */
+    .phone-frame {
+      position: relative;
+      z-index: 1;
+      width: 248px;
+      height: 536px;
+      background: #0f0920;
+      border-radius: 44px;
+      border: 7px solid #2a1f55;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.06),
+        0 40px 80px rgba(0,0,0,0.75),
+        0 16px 40px rgba(124,58,237,0.35);
+    }
+    .phone-frame::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 72px; height: 7px;
+      background: #0f0920;
+      border-radius: 0 0 10px 10px;
+      z-index: 10;
+    }
+
+    .phone-frame-sm {
+      width: 180px;
+      height: 390px;
+      background: #0f0920;
+      border-radius: 34px;
+      border: 6px solid #2a1f55;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04),
+        0 30px 60px rgba(0,0,0,0.6),
+        0 10px 30px rgba(124,58,237,0.2);
+    }
+    .phone-frame-sm::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 55px; height: 5px;
+      background: #0f0920;
+      border-radius: 0 0 8px 8px;
+      z-index: 10;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--violet);
+      color: white;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 13px 24px;
+      border-radius: 999px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      background: #6d28d9;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(124,58,237,0.45);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 13px 24px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: background 0.2s, transform 0.15s;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.14);
+      transform: translateY(-2px);
+    }
+
+    /* float animation for showcase phones */
+    @keyframes phoneFloat {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-14px); }
+    }
+
+    /* ─── SECTION GENERIC ───────────────────────────────────────── */
+    section { padding: 100px 0; }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .section-head .badge { margin-bottom: 16px; }
+    .section-title {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -1px;
+      color: var(--gray-900);
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .section-subtitle {
+      font-size: 17px;
+      color: var(--gray-500);
+      line-height: 1.65;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ─── HOW IT WORKS ──────────────────────────────────────────── */
+    #how { background: var(--white); }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+
+    .step {
+      text-align: center;
+      padding: 40px 28px;
+      border-radius: var(--radius-xl);
+      background: var(--gray-100);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .step:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-card);
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px; height: 52px;
+      background: var(--violet);
+      color: white;
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 20px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      box-shadow: 0 8px 20px rgba(124,58,237,0.35);
+    }
+
+    .step-icon { font-size: 36px; margin-bottom: 14px; display: block; }
+    .step-title {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--gray-900);
+      margin-bottom: 10px;
+    }
+    .step-text { font-size: 14px; color: var(--gray-500); line-height: 1.65; }
+
+    /* ─── FEATURES ──────────────────────────────────────────────── */
+    #features { background: var(--violet-soft); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: 36px;
+      border: 1px solid var(--gray-200);
+      transition: transform 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); }
+
+    .feature-card.featured {
+      background: var(--violet);
+      border-color: transparent;
+    }
+    .feature-card.featured .feature-title { color: white; }
+    .feature-card.featured .feature-text  { color: rgba(255,255,255,0.75); }
+    .feature-card.featured::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; right: -40px;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+
+    .feature-icon-wrap {
+      width: 52px; height: 52px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+      background: var(--violet-soft);
+    }
+    .feature-card.featured .feature-icon-wrap { background: rgba(255,255,255,0.15); }
+
+    .feature-title {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 19px;
+      color: var(--gray-900);
+      margin-bottom: 10px;
+    }
+    .feature-text { font-size: 14px; color: var(--gray-500); line-height: 1.7; }
+
+    /* ─── FOR WHOM ──────────────────────────────────────────────── */
+    #forwhom { background: var(--white); }
+
+    .forwhom-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .forwhom-card {
+      background: var(--gray-100);
+      border-radius: var(--radius-xl);
+      padding: 32px 24px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .forwhom-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-card); }
+
+    .forwhom-emoji { font-size: 42px; display: block; margin-bottom: 16px; }
+    .forwhom-title {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+    }
+    .forwhom-text { font-size: 13px; color: var(--gray-500); line-height: 1.6; }
+
+    /* ─── SHOWCASE ──────────────────────────────────────────────── */
+    #showcase {
+      background: linear-gradient(160deg, var(--violet-deep) 0%, #1a0838 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #showcase::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    .showcase-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .showcase-blob-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(124,58,237,0.45) 0%, transparent 70%);
+      top: -100px; right: -100px;
+    }
+    .showcase-blob-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(249,115,22,0.25) 0%, transparent 70%);
+      bottom: -80px; left: -80px;
+    }
+
+    .showcase-inner {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .showcase-phones {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    .showcase-phone-1 { animation: phoneFloat 5s ease-in-out infinite; }
+    .showcase-phone-2 {
+      animation: phoneFloat 5.5s ease-in-out infinite;
+      animation-delay: 0.6s;
+      margin-top: 60px;
+      margin-left: -30px;
+      z-index: 0;
+      opacity: 0.8;
+    }
+
+    .showcase-content .section-title  { color: white; text-align: left; }
+    .showcase-content .section-subtitle { color: rgba(255,255,255,0.55); text-align: left; margin: 0 0 40px; }
+
+    .trust-points { display: flex; flex-direction: column; gap: 16px; }
+
+    .trust-point { display: flex; align-items: flex-start; gap: 14px; }
+
+    .trust-icon {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .trust-point-title {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 15px;
+      color: white;
+      margin-bottom: 3px;
+    }
+    .trust-point-text { font-size: 13px; color: rgba(255,255,255,0.50); line-height: 1.55; }
+
+    /* ─── CTA ───────────────────────────────────────────────────── */
+    #cta { background: var(--white); text-align: center; padding: 120px 0; }
+
+    .cta-inner { max-width: 600px; margin: 0 auto; }
+
+    .cta-title {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: clamp(32px, 5vw, 52px);
+      letter-spacing: -1.2px;
+      line-height: 1.1;
+      color: var(--gray-900);
+      margin-bottom: 18px;
+    }
+    .cta-subtitle { font-size: 17px; color: var(--gray-500); line-height: 1.65; margin-bottom: 44px; }
+
+    .store-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    .store-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--gray-900);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 16px;
+      font-family: var(--font-body);
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      min-width: 180px;
+    }
+    .store-btn:hover {
+      background: var(--violet);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(124,58,237,0.35);
+    }
+    .store-btn-icon { font-size: 26px; }
+    .store-btn-label { font-size: 10px; color: rgba(255,255,255,0.6); }
+    .store-btn-name { font-size: 15px; font-weight: 600; margin-top: 1px; }
+    .cta-note { margin-top: 20px; font-size: 12px; color: var(--gray-500); }
+
+    /* ─── FOOTER ────────────────────────────────────────────────── */
+    footer { background: var(--gray-900); padding: 56px 0 40px; }
+
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 26px;
+      color: white;
+      letter-spacing: -0.5px;
+    }
+    .footer-logo span { color: var(--orange); }
+
+    .footer-tagline { font-size: 14px; color: rgba(255,255,255,0.35); }
+
+    .footer-links { display: flex; gap: 32px; list-style: none; }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,0.40); transition: color 0.2s; }
+    .footer-links a:hover { color: rgba(255,255,255,0.80); }
+
+    .footer-divider { width: 100%; height: 1px; background: rgba(255,255,255,0.06); }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,0.25); }
+
+    .swiss-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.55);
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero-mega-title { letter-spacing: -2px; }
+
+      .steps { grid-template-columns: 1fr; gap: 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .forwhom-grid { grid-template-columns: repeat(2, 1fr); }
+
+      .showcase-inner { grid-template-columns: 1fr; text-align: center; gap: 48px; }
+      .showcase-content .section-title,
+      .showcase-content .section-subtitle { text-align: center; }
+      .showcase-content .section-subtitle { margin: 0 auto 40px; }
+      .showcase-phones { order: 2; }
+
+      .footer-links { flex-wrap: wrap; justify-content: center; gap: 20px; }
+    }
+
+    @media (max-width: 600px) {
+      section { padding: 72px 0; }
+      .forwhom-grid { grid-template-columns: 1fr 1fr; }
+      .phone-frame { width: 210px; height: 454px; border-radius: 38px; }
+      .hero-mega-title { letter-spacing: -1.5px; }
+      .iphone-frame-wrap { width: 280px; height: 570px; }
+      .hero-phone-anchor { margin-left: -140px; margin-top: -285px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── NAV ─────────────────────────────────────────────────────── -->
+  <nav id="navbar">
+    <span class="nav-logo-text">PLAY<span>O</span></span>
+    <a href="#cta" class="nav-cta">App herunterladen</a>
+  </nav>
+
+  <!-- ── HERO SCROLL-PIN ──────────────────────────────────────────── -->
+  <div id="hero-scroll">
+    <div class="hero-sticky" id="heroSticky">
+
+      <!-- Background -->
+      <div class="hero-blob hero-blob-1"></div>
+      <div class="hero-blob hero-blob-2"></div>
+
+      <!-- Big headline — fades as phone rises -->
+      <div class="hero-headline" id="heroHL">
+        <h1 class="hero-mega-title">
+          Spieltermine <span class="accent">einfach</span> koordinieren.
+        </h1>
+      </div>
+
+      <!-- Phone — starts partially visible at bottom, rises and exits top -->
+      <div class="hero-phone-anchor" id="heroPhone">
+        <div class="phone-glow"></div>
+        <div class="iphone-frame-wrap">
+          <img class="hero-screen-img" src="assets/screenshots/login.png" alt="PLAYO App" />
+          <img class="iphone-frame" src="assets/iphone-frame.avif" alt="" aria-hidden="true" />
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── HOW IT WORKS ─────────────────────────────────────────────── -->
+  <section id="how">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="badge">So einfach geht's</span>
+        <h2 class="section-title">In 3 Schritten loslegen</h2>
+        <p class="section-subtitle">Von der Registrierung bis zum ersten koordinierten Spieltermin — schnell, unkompliziert und ohne Overhead.</p>
+      </div>
+      <div class="steps">
+        <div class="step reveal reveal-delay-1">
+          <div class="step-number">1</div>
+          <span class="step-icon">👶</span>
+          <div class="step-title">Kinder eintragen</div>
+          <p class="step-text">Erstelle ein Profil für dein Kind — mit Name, Alter und einem Avatar. Dauert weniger als eine Minute.</p>
+        </div>
+        <div class="step reveal reveal-delay-2">
+          <div class="step-number">2</div>
+          <span class="step-icon">🤝</span>
+          <div class="step-title">Eltern verbinden</div>
+          <p class="step-text">Teile deinen persönlichen Code mit anderen Eltern. Sobald ihr verbunden seid, seht ihr gegenseitig die Verfügbarkeit.</p>
+        </div>
+        <div class="step reveal reveal-delay-3">
+          <div class="step-number">3</div>
+          <span class="step-icon">📅</span>
+          <div class="step-title">Verfügbarkeit setzen</div>
+          <p class="step-text">Wann hat dein Kind Zeit? Setze einen Status für heute, morgen oder wiederkehrend — in wenigen Sekunden.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ─────────────────────────────────────────────────── -->
+  <section id="features">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="badge">Was PLAYO kann</span>
+        <h2 class="section-title">Alles, was Familien brauchen</h2>
+        <p class="section-subtitle">Kein überladenes Tool — nur die Funktionen, die wirklich zählen.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card featured reveal reveal-delay-1">
+          <div class="feature-icon-wrap">⚡</div>
+          <div class="feature-title">Echtzeit-Verfügbarkeit</div>
+          <p class="feature-text">Sieh sofort auf dem Dashboard, welche Kinder deiner Kontakte gerade verfügbar sind — ohne Nachfragen, ohne Wartezeit.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon-wrap">🔗</div>
+          <div class="feature-title">Verbindung per Code</div>
+          <p class="feature-text">Kein Social-Media-Profil nötig. Teile einfach deinen persönlichen <strong>K-Code</strong> und verbindet euch — sicher und direkt.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-3">
+          <div class="feature-icon-wrap">👨‍👩‍👧</div>
+          <div class="feature-title">Bezugspersonen</div>
+          <p class="feature-text">Co-Elternteile, Grosseltern oder Tagesmütter können über den <strong>B-Code</strong> hinzugefügt werden und Kinder gemeinsam verwalten.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-4">
+          <div class="feature-icon-wrap">🔒</div>
+          <div class="feature-title">Privatsphäre by Design</div>
+          <p class="feature-text">Nur Personen, die du selbst verbindest, sehen deine Kinder. Keine Algorithmen, keine Datenweitergabe, kein Social Feed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOR WHOM ─────────────────────────────────────────────────── -->
+  <section id="forwhom">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="badge">Für wen?</span>
+        <h2 class="section-title">PLAYO ist für jede Familie</h2>
+        <p class="section-subtitle">Ob klassische Familie, Patchworkfamilie oder Alleinerziehende — PLAYO passt sich eurer Lebenssituation an.</p>
+      </div>
+      <div class="forwhom-grid">
+        <div class="forwhom-card reveal reveal-delay-1">
+          <span class="forwhom-emoji">👩‍👧‍👦</span>
+          <div class="forwhom-title">Berufstätige Eltern</div>
+          <p class="forwhom-text">Keine Zeit für lange Koordinations-Chats. PLAYO zeigt auf einen Blick, wann Spielen möglich ist.</p>
+        </div>
+        <div class="forwhom-card reveal reveal-delay-2">
+          <span class="forwhom-emoji">💞</span>
+          <div class="forwhom-title">Patchworkfamilien</div>
+          <p class="forwhom-text">Beide Elternteile haben Zugriff. Bezugspersonen können gezielt für bestimmte Kinder berechtigt werden.</p>
+        </div>
+        <div class="forwhom-card reveal reveal-delay-3">
+          <span class="forwhom-emoji">👴👵</span>
+          <div class="forwhom-title">Grosseltern & Betreuung</div>
+          <p class="forwhom-text">Tagesmütter, Grosseltern und andere Bezugspersonen können einfach eingebunden werden.</p>
+        </div>
+        <div class="forwhom-card reveal reveal-delay-4">
+          <span class="forwhom-emoji">🏘️</span>
+          <div class="forwhom-title">Nachbarschaft & Klasse</div>
+          <p class="forwhom-text">Verbinde dich mit Eltern aus der Schulklasse oder dem Quartier — und sieh, wer wann verfügbar ist.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── SHOWCASE ─────────────────────────────────────────────────── -->
+  <section id="showcase">
+    <div class="showcase-blob showcase-blob-1"></div>
+    <div class="showcase-blob showcase-blob-2"></div>
+    <div class="container">
+      <div class="showcase-inner">
+        <div class="showcase-phones reveal">
+          <div class="showcase-phone-1">
+            <div class="phone-frame">
+              <img class="phone-screen" src="assets/screenshots/dashboard.png" alt="PLAYO Dashboard" />
+            </div>
+          </div>
+          <div class="showcase-phone-2">
+            <div class="phone-frame-sm" style="position:relative;">
+              <img class="phone-screen" src="assets/screenshots/dialog.png" alt="PLAYO Termine" style="width:100%;height:100%;object-fit:cover;object-position:top;" />
+            </div>
+          </div>
+        </div>
+        <div class="showcase-content reveal reveal-delay-2">
+          <span class="badge badge-dark" style="margin-bottom:16px;display:inline-flex;">🛡️ Vertrauen &amp; Datenschutz</span>
+          <h2 class="section-title">Eure Daten gehören euch. Punkt.</h2>
+          <p class="section-subtitle">PLAYO wurde von Eltern für Eltern entwickelt — mit höchsten Ansprüchen an Datenschutz und Sicherheit.</p>
+          <div class="trust-points">
+            <div class="trust-point">
+              <div class="trust-icon">🇨🇭</div>
+              <div>
+                <div class="trust-point-title">Entwickelt in der Schweiz</div>
+                <p class="trust-point-text">Schweizer Werte: Präzision, Diskretion und Qualität — auch digital.</p>
+              </div>
+            </div>
+            <div class="trust-point">
+              <div class="trust-icon">🚫</div>
+              <div>
+                <div class="trust-point-title">Keine Werbung, nie</div>
+                <p class="trust-point-text">Wir verkaufen keine Daten und schalten keine Werbung. PLAYO ist und bleibt werbefrei.</p>
+              </div>
+            </div>
+            <div class="trust-point">
+              <div class="trust-icon">👁️</div>
+              <div>
+                <div class="trust-point-title">Nur deine Kontakte sehen dich</div>
+                <p class="trust-point-text">Du entscheidest, wer deine Kinder sieht. Kein offenes Profil, kein öffentlicher Feed.</p>
+              </div>
+            </div>
+            <div class="trust-point">
+              <div class="trust-icon">🗑️</div>
+              <div>
+                <div class="trust-point-title">Volle Kontrolle</div>
+                <p class="trust-point-text">Konto und alle Daten können jederzeit vollständig gelöscht werden.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ──────────────────────────────────────────────────────── -->
+  <section id="cta">
+    <div class="container">
+      <div class="cta-inner reveal">
+        <span class="badge" style="margin-bottom:20px;">Kostenlos starten</span>
+        <h2 class="cta-title">Bereit für stressfreie<br>Spieltermine?</h2>
+        <p class="cta-subtitle">PLAYO ist kostenlos verfügbar. Lade die App herunter und verbinde dich noch heute mit anderen Familien.</p>
+        <div class="store-buttons">
+          <a href="#" class="store-btn">
+            <span class="store-btn-icon">🍎</span>
+            <div><div class="store-btn-label">Laden im</div><div class="store-btn-name">App Store</div></div>
+          </a>
+          <a href="#" class="store-btn">
+            <span class="store-btn-icon">▶</span>
+            <div><div class="store-btn-label">Jetzt bei</div><div class="store-btn-name">Google Play</div></div>
+          </a>
+        </div>
+        <p class="cta-note">iOS &amp; Android · Kostenlos · Keine versteckten Kosten</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ───────────────────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">PLAY<span>O</span></div>
+        <p class="footer-tagline">Spieltermine einfach koordinieren.</p>
+        <span class="swiss-badge">🇨🇭 Made in Switzerland</span>
+        <ul class="footer-links">
+          <li><a href="#">Datenschutz</a></li>
+          <li><a href="#">Impressum</a></li>
+          <li><a href="#">Kontakt</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+        <div class="footer-divider"></div>
+        <p class="footer-copy">© 2026 PLAYO · Alle Rechte vorbehalten</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── SCRIPTS ──────────────────────────────────────────────────── -->
+  <script>
+    // ── Sticky nav ─────────────────────────────────────────────────
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // ── Easing helpers ─────────────────────────────────────────────
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+    function clamp(val, min, max) { return Math.max(min, Math.min(max, val)); }
+    function progress(val, start, end) { return clamp((val - start) / (end - start), 0, 1); }
+
+    // ── Hero scroll-pin animation ───────────────────────────────────
+    const heroScroll = document.getElementById('hero-scroll');
+    const heroHL     = document.getElementById('heroHL');
+    const heroPhone  = document.getElementById('heroPhone');
+
+    function updateHero() {
+      const scrolled   = window.scrollY;
+      const sectionTop = heroScroll.offsetTop;
+      const sectionH   = heroScroll.offsetHeight;
+      const vh         = window.innerHeight;
+
+      // p = 0…1 over the sticky scroll range
+      const p = clamp((scrolled - sectionTop) / (sectionH - vh), 0, 1);
+
+      // ── Phone: LINEAR (no easing) so it tracks the finger 1:1 ──
+      // At p=0: translateY = +60vh  (~40% of phone visible from bottom)
+      // At p=1: translateY = -100vh (just fully exited top)
+      // Sticky releases exactly at p=1 → next section slides in immediately
+      const phoneY = 60 - 160 * p;
+      heroPhone.style.transform = `translateY(${phoneY}vh)`;
+
+      // ── Headline: drifts downward linearly toward phone, fades only near end ──
+      const hlShift = p * 44;                                    // 0 → 44vh downward
+      const hlFade  = easeInOutCubic(progress(p, 0.74, 0.96));  // fades late
+      heroHL.style.opacity   = 1 - hlFade;
+      heroHL.style.transform = `translateX(-50%) translateY(${hlShift}vh)`;
+    }
+
+    // RAF-throttled for buttery smoothness
+    let _heroRAF = null;
+    window.addEventListener('scroll', () => {
+      if (!_heroRAF) {
+        _heroRAF = requestAnimationFrame(() => { updateHero(); _heroRAF = null; });
+      }
+    }, { passive: true });
+    updateHero();
+
+    // ── Section scroll reveal ───────────────────────────────────────
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
