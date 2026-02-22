@@ -231,6 +231,24 @@
     }
     .hero-logo-big .accent { color: var(--orange); }
 
+    .hero-logo-sub {
+      display: block;
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-top: 16px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.7s 0.25s ease, transform 0.7s 0.25s ease;
+    }
+    .hero-logo-reveal.sub-visible .hero-logo-sub {
+      opacity: 1;
+      transform: none;
+    }
+
     /* ── iPhone Mockup ── */
     .hero-phone-anchor {
       position: absolute;
@@ -533,20 +551,7 @@
       margin-bottom: 20px;
     }
 
-    /* SVG icon */
-    .step-icon-wrap {
-      width: 44px; height: 44px;
-      border-radius: 12px;
-      background: var(--violet);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 14px;
-      color: white;
-    }
-    .step-icon-wrap svg { width: 20px; height: 20px; }
-
-    .step-title {
+.step-title {
       font-family: var(--font-head);
       font-weight: 800;
       font-size: 18px;
@@ -812,7 +817,14 @@
     }
     .footer-logo span { color: var(--orange); }
 
-    .footer-tagline { font-size: 14px; color: rgba(255,255,255,0.35); }
+    .footer-tagline {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-family: var(--font-body);
+      font-weight: 400;
+    }
 
     .footer-links { display: flex; gap: 32px; list-style: none; }
     .footer-links a { font-size: 13px; color: rgba(255,255,255,0.40); transition: color 0.2s; }
@@ -900,6 +912,7 @@
         <!-- PLAYO logo — crossfades in as headline fades out -->
         <div class="hero-logo-reveal" id="heroLogoReveal">
           <span class="hero-logo-big">P<span class="lk-L">L</span><span class="lk-A">A</span>Y<span class="accent">O</span></span>
+          <span class="hero-logo-sub">Spieldates für deine Kids.</span>
         </div>
 
         <!-- Phone — starts partially visible at bottom, rises and exits top -->
@@ -939,14 +952,6 @@
           <div class="step" id="step1">
             <div class="step-num">01</div>
             <div class="step-rule"></div>
-            <div class="step-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="5" y="2" width="14" height="20" rx="2.5"/>
-                <line x1="12" y1="7" x2="12" y2="14"/>
-                <polyline points="9,11 12,14 15,11"/>
-                <line x1="9" y1="18" x2="15" y2="18"/>
-              </svg>
-            </div>
             <div class="step-title">App laden & einrichten</div>
             <p class="step-text">PLAYO kostenlos im App Store oder Google Play laden. Konto anlegen und ein Profil erstellen — in unter 2 Minuten startklar.</p>
           </div>
@@ -954,12 +959,6 @@
           <div class="step" id="step2">
             <div class="step-num">02</div>
             <div class="step-rule"></div>
-            <div class="step-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-              </svg>
-            </div>
             <div class="step-title">Per K-Code verbinden</div>
             <p class="step-text">Jede Person erhält einen persönlichen K-Code. Teile ihn mit wem du vertraust — aus Schule, Quartier oder Verein. Nur diese sehen deine Kinder.</p>
           </div>
@@ -967,11 +966,6 @@
           <div class="step" id="step3">
             <div class="step-num">03</div>
             <div class="step-rule"></div>
-            <div class="step-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-              </svg>
-            </div>
             <div class="step-title">Status setzen. Fertig.</div>
             <p class="step-text">Ein Tap auf dem Dashboard: «Heute verfügbar.» Alle verbundenen Kontakte sehen es sofort — kein Chat, kein Hin und Her.</p>
           </div>
@@ -1216,6 +1210,8 @@
       // PLAYO logo: crossfade with headline, soft ease-in
       const logoT = progress(a, 0.80, 1.0);
       heroLogoReveal.style.opacity = logoT * logoT;
+      // Subline appears once logo is mostly visible
+      heroLogoReveal.classList.toggle('sub-visible', logoT > 0.7);
 
       // Ramp: during logo stand (p=0.85→1.0), drift the inner content upward.
       // heroSticky stays locked — only the inner wrapper moves, so no edge/strip artifacts.
