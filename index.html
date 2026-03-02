@@ -2583,6 +2583,8 @@
         if (!video.duration) return;
         const scrollRange = video.duration * PX_PER_SEC;
         wrap.style.height = window.innerHeight + scrollRange + 'px';
+        // Neu berechnen damit Nav-Dark-Range die korrekte Wrap-Höhe kennt
+        if (typeof calcDarkRanges === 'function') { calcDarkRanges(); updateNavStyle(); }
       }
 
       video.addEventListener('loadedmetadata', setWrapHeight);
