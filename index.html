@@ -6,6 +6,37 @@
   <title>PLAYO – Wer kann heute spielen?</title>
   <meta name="description" content="Sieh auf einen Blick, welche Kinder in deinem Umfeld verfügbar sind. PLAYO verbindet Eltern – privat, diskret, ohne Koordinations-Chaos." />
 
+  <!-- ── Google Analytics 4 — Consent Mode ───────────────────────
+       SETUP: Ersetze G-XXXXXXXXXX mit deiner echten GA4 Measurement ID.
+       GA feuert NICHT bevor der Nutzer im Cookie-Banner zustimmt.
+       ──────────────────────────────────────────────────────────── -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+
+    // Consent-Defaults: alles denied bis Nutzer zustimmt
+    gtag('consent', 'default', {
+      analytics_storage: 'denied',
+      ad_storage:        'denied',
+      wait_for_update:   500
+    });
+
+    // Gespeicherte Entscheidung sofort anwenden (kein Banner-Flackern bei Rückkehr)
+    (function() {
+      var saved = localStorage.getItem('playo_cookie_consent');
+      if (saved === 'accepted') {
+        gtag('consent', 'update', { analytics_storage: 'granted' });
+      }
+    })();
+  </script>
+
+  <!-- GA4 Script (lädt immer, tracked aber nur nach Consent) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX', { anonymize_ip: true });
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -1493,6 +1524,399 @@
       .iphone-frame-wrap { width: 310px; height: 631px; }
       .hero-phone-anchor { margin-left: -155px; margin-top: -316px; }
     }
+
+    /* ─── COOKIE CONSENT BANNER ────────────────────────────────── */
+    #cookie-banner {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(140px);
+      z-index: 2000;
+      width: calc(100% - 32px);
+      max-width: 520px;
+      background: var(--gray-900);
+      border: 1px solid rgba(124,58,237,0.30);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 40px rgba(13,8,32,0.55), 0 0 0 1px rgba(255,255,255,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      opacity: 0;
+      transition: transform 0.42s cubic-bezier(.22,1,.36,1), opacity 0.28s ease;
+      pointer-events: none;
+    }
+    #cookie-banner.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .cookie-banner-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .cookie-banner-icon {
+      width: 34px; height: 34px;
+      background: rgba(124,58,237,0.20);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+      margin-top: 1px;
+    }
+    .cookie-banner-text { flex: 1; }
+    .cookie-banner-title {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 14px;
+      color: white;
+      margin-bottom: 3px;
+    }
+    .cookie-banner-desc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.5;
+    }
+    .cookie-banner-desc a {
+      color: rgba(167,139,250,0.90);
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    /* Toggle rows */
+    .cookie-categories {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cookie-category {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 10px 14px;
+    }
+    .cookie-category-info { flex: 1; min-width: 0; }
+    .cookie-category-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cookie-category-name .cat-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: rgba(124,58,237,0.25);
+      color: #A78BFA;
+    }
+    .cookie-category-name .cat-badge.required {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.35);
+    }
+    .cookie-category-desc {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      margin-top: 2px;
+    }
+
+    /* Toggle switch */
+    .cookie-toggle {
+      position: relative;
+      width: 38px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+    .cookie-toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .cookie-toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .cookie-toggle input:checked + .cookie-toggle-track { background: var(--violet); }
+    .cookie-toggle input:disabled + .cookie-toggle-track { cursor: not-allowed; opacity: 0.4; }
+    .cookie-toggle-track::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: white;
+      top: 3px; left: 3px;
+      transition: transform 0.2s;
+    }
+    .cookie-toggle input:checked + .cookie-toggle-track::after { transform: translateX(16px); }
+
+    /* Action buttons */
+    .cookie-banner-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cookie-btn-accept-all {
+      width: 100%;
+      height: 40px;
+      background: var(--violet);
+      color: white;
+      border: none;
+      border-radius: 11px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .cookie-btn-accept-all:hover { background: #6d28d9; }
+    .cookie-btn-row {
+      display: flex;
+      gap: 8px;
+    }
+    .cookie-btn-save {
+      flex: 1;
+      height: 36px;
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.70);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .cookie-btn-save:hover { background: rgba(255,255,255,0.12); }
+    .cookie-btn-decline {
+      flex: 1;
+      height: 36px;
+      background: transparent;
+      color: rgba(255,255,255,0.30);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.18s;
+    }
+    .cookie-btn-decline:hover { color: rgba(255,255,255,0.55); }
+
+    /* ─── LEGAL MODALS ──────────────────────────────────────────── */
+    .legal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13,8,32,0.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0;
+    }
+    @media (min-width: 640px) {
+      .legal-overlay { align-items: center; padding: 24px; }
+    }
+    .legal-overlay.open { display: flex; }
+
+    .legal-panel {
+      background: #fff;
+      width: 100%;
+      max-width: 680px;
+      max-height: 88vh;
+      border-radius: 24px 24px 0 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(32px);
+      opacity: 0;
+      transition: transform 0.32s cubic-bezier(.22,1,.36,1), opacity 0.24s ease;
+    }
+    @media (min-width: 640px) {
+      .legal-panel { border-radius: 24px; max-height: 82vh; }
+    }
+    .legal-overlay.open .legal-panel {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .legal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #EDE9F6;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #F5F3FF 0%, #EDE9F6 100%);
+    }
+    .legal-header-left { display: flex; align-items: center; gap: 12px; }
+    .legal-header-icon {
+      width: 36px; height: 36px;
+      background: #7C3AED;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .legal-header-icon.orange { background: #F97316; }
+    .legal-header-icon ph-icon, .legal-header-icon i { color: white; font-size: 18px; }
+    .legal-title {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--gray-900);
+    }
+    .legal-subtitle { font-size: 11px; color: #8B7DB8; margin-top: 1px; }
+
+    .legal-close {
+      width: 32px; height: 32px;
+      border: none;
+      background: rgba(124,58,237,0.10);
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #7C3AED;
+      font-size: 16px;
+      flex-shrink: 0;
+      transition: background 0.18s;
+    }
+    .legal-close:hover { background: rgba(124,58,237,0.20); }
+
+    .legal-body {
+      overflow-y: auto;
+      padding: 24px;
+      flex: 1;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: #4B4365;
+      line-height: 1.65;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .legal-section {
+      margin-bottom: 24px;
+    }
+    .legal-section:last-child { margin-bottom: 0; }
+    .legal-section-title {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .legal-section-title::before {
+      content: '';
+      display: inline-block;
+      width: 3px; height: 14px;
+      background: var(--violet);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .legal-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 7px 0;
+      border-bottom: 1px solid #F3F0FF;
+      font-size: 13px;
+    }
+    .legal-row:last-child { border-bottom: none; }
+    .legal-row-label { color: #8B7DB8; flex-shrink: 0; }
+    .legal-row-value { font-weight: 600; color: var(--gray-900); text-align: right; }
+    .legal-row-value a { color: var(--violet); }
+
+    .legal-check {
+      display: flex; align-items: flex-start; gap: 8px; margin-bottom: 7px;
+    }
+    .legal-check-icon { color: #7C3AED; font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .legal-check-icon.red { color: #F87171; }
+
+    .legal-box {
+      background: #F5F3FF;
+      border: 1px solid #DDD6FE;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: #4C1D95;
+      margin-top: 8px;
+    }
+    .legal-box.orange {
+      background: #FFF7ED;
+      border-color: #FED7AA;
+      color: #92400E;
+    }
+    .legal-box.green {
+      background: #F0FDF4;
+      border-color: #BBF7D0;
+      color: #14532D;
+    }
+
+    .legal-contact-card {
+      background: #F9F8FF;
+      border: 1px solid #EDE9F6;
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    .legal-contact-card strong { display: block; font-size: 15px; color: var(--gray-900); margin-bottom: 4px; }
+    .legal-contact-card p { font-size: 13px; color: #8B7DB8; margin: 2px 0; }
+    .legal-contact-card a { color: var(--violet); font-weight: 600; }
+
+    .legal-faq-item {
+      border: 1px solid #EDE9F6;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .legal-faq-q {
+      width: 100%;
+      text-align: left;
+      background: #F9F8FF;
+      border: none;
+      padding: 13px 16px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-900);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.15s;
+    }
+    .legal-faq-q:hover { background: #F0EDFF; }
+    .legal-faq-q .faq-arrow { font-size: 11px; color: #8B7DB8; transition: transform 0.2s; flex-shrink: 0; }
+    .legal-faq-item.open .legal-faq-q { background: #EDE9F6; }
+    .legal-faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .legal-faq-a {
+      display: none;
+      padding: 12px 16px 14px;
+      font-size: 13px;
+      color: #4B4365;
+      line-height: 1.6;
+      border-top: 1px solid #EDE9F6;
+      background: #fff;
+    }
+    .legal-faq-item.open .legal-faq-a { display: block; }
+
+    .legal-footer-note {
+      text-align: center;
+      font-size: 11px;
+      color: #A9A0C4;
+      padding-top: 16px;
+      border-top: 1px solid #F3F0FF;
+      margin-top: 16px;
+    }
   </style>
 </head>
 
@@ -1998,10 +2422,10 @@
           <span data-t="footerSwiss">Made in Switzerland</span>
         </span>
         <ul class="footer-links">
-          <li><a href="#" data-t="footerLink1">Datenschutz</a></li>
-          <li><a href="#" data-t="footerLink2">Impressum</a></li>
-          <li><a href="#" data-t="footerLink3">Kontakt</a></li>
-          <li><a href="#" data-t="footerLink4">FAQ</a></li>
+          <li><a href="#" onclick="openModal('datenschutz');return false;" data-t="footerLink1">Datenschutz</a></li>
+          <li><a href="#" onclick="openModal('impressum');return false;" data-t="footerLink2">Impressum</a></li>
+          <li><a href="#" onclick="openModal('kontakt');return false;" data-t="footerLink3">Kontakt</a></li>
+          <li><a href="#" onclick="openModal('faq');return false;" data-t="footerLink4">FAQ</a></li>
         </ul>
         <div class="footer-divider"></div>
         <p class="footer-copy" data-t="footerCopy">© 2026 PLAYO · Alle Rechte vorbehalten</p>
@@ -2617,6 +3041,521 @@
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
     })();
+  </script>
+
+
+  <!-- ── COOKIE CONSENT BANNER ────────────────────────────────── -->
+  <div id="cookie-banner" role="dialog" aria-label="Cookie-Einstellungen">
+    <div class="cookie-banner-top">
+      <div class="cookie-banner-icon">🍪</div>
+      <div class="cookie-banner-text">
+        <div class="cookie-banner-title">Deine Cookie-Einstellungen</div>
+        <div class="cookie-banner-desc">
+          Wir nutzen Cookies für Analysen und Werbung. Du entscheidest, was du erlaubst.
+          <a onclick="openModal('datenschutz');return false;">Mehr erfahren</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kategorien mit Toggles -->
+    <div class="cookie-categories">
+      <div class="cookie-category">
+        <div class="cookie-category-info">
+          <div class="cookie-category-name">
+            Notwendig
+            <span class="cat-badge required">Immer aktiv</span>
+          </div>
+          <div class="cookie-category-desc">Technischer Betrieb der Website</div>
+        </div>
+        <label class="cookie-toggle">
+          <input type="checkbox" checked disabled>
+          <span class="cookie-toggle-track"></span>
+        </label>
+      </div>
+
+      <div class="cookie-category">
+        <div class="cookie-category-info">
+          <div class="cookie-category-name">
+            Analytics
+            <span class="cat-badge">Google Analytics 4</span>
+          </div>
+          <div class="cookie-category-desc">Anonyme Nutzungsstatistiken</div>
+        </div>
+        <label class="cookie-toggle">
+          <input type="checkbox" id="toggle-analytics">
+          <span class="cookie-toggle-track"></span>
+        </label>
+      </div>
+
+      <div class="cookie-category">
+        <div class="cookie-category-info">
+          <div class="cookie-category-name">
+            Marketing
+            <span class="cat-badge">Meta Pixel · Google Ads</span>
+          </div>
+          <div class="cookie-category-desc">Werbung & Remarketing</div>
+        </div>
+        <label class="cookie-toggle">
+          <input type="checkbox" id="toggle-marketing">
+          <span class="cookie-toggle-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="cookie-banner-actions">
+      <button class="cookie-btn-accept-all" onclick="cookieAcceptAll()">Alle akzeptieren</button>
+      <div class="cookie-btn-row">
+        <button class="cookie-btn-save" onclick="cookieSaveSelection()">Auswahl speichern</button>
+        <button class="cookie-btn-decline" onclick="cookieDecline()">Ablehnen</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ── Cookie Consent Logic (2 Kategorien) ────────────────────────
+       localStorage key: 'playo_cookie_consent'
+       Werte: 'accepted-all' | 'accepted-analytics' | 'accepted-marketing' | 'declined'
+    ────────────────────────────────────────────────────────────────── */
+    (function() {
+      var saved = localStorage.getItem('playo_cookie_consent');
+      if (saved) return; // Bereits entschieden — kein Banner
+
+      setTimeout(function() {
+        var banner = document.getElementById('cookie-banner');
+        if (banner) banner.classList.add('visible');
+      }, 1200);
+    })();
+
+    function cookieAcceptAll() {
+      localStorage.setItem('playo_cookie_consent', 'accepted-all');
+      gtag('consent', 'update', { analytics_storage: 'granted', ad_storage: 'granted' });
+      fireMarketingPixels();
+      hideCookieBanner();
+    }
+
+    function cookieSaveSelection() {
+      var analytics = document.getElementById('toggle-analytics').checked;
+      var marketing = document.getElementById('toggle-marketing').checked;
+      var key = analytics && marketing ? 'accepted-all'
+              : analytics ? 'accepted-analytics'
+              : marketing ? 'accepted-marketing'
+              : 'declined';
+      localStorage.setItem('playo_cookie_consent', key);
+      gtag('consent', 'update', {
+        analytics_storage: analytics ? 'granted' : 'denied',
+        ad_storage:        marketing  ? 'granted' : 'denied'
+      });
+      if (marketing) fireMarketingPixels();
+      hideCookieBanner();
+    }
+
+    function cookieDecline() {
+      localStorage.setItem('playo_cookie_consent', 'declined');
+      gtag('consent', 'update', { analytics_storage: 'denied', ad_storage: 'denied' });
+      hideCookieBanner();
+    }
+
+    function fireMarketingPixels() {
+      /* ── MARKETING PIXELS ──────────────────────────────────────────
+         Hier Meta Pixel / Google Ads Conversion Tracking einfügen.
+         Wird nur aufgerufen wenn Nutzer Marketing-Cookies akzeptiert.
+
+         Beispiel Meta Pixel:
+         !function(f,b,e,v,n,t,s){...}(window,document,'script',
+           'https://connect.facebook.net/en_US/fbevents.js');
+         fbq('init', 'DEIN-PIXEL-ID');
+         fbq('track', 'PageView');
+
+         Beispiel Google Ads:
+         gtag('config', 'AW-DEINE-CONVERSION-ID');
+      ──────────────────────────────────────────────────────────────── */
+    }
+
+    function hideCookieBanner() {
+      var banner = document.getElementById('cookie-banner');
+      if (!banner) return;
+      banner.classList.remove('visible');
+      setTimeout(function() { banner.style.display = 'none'; }, 450);
+    }
+
+    /* Gespeicherte Toggles beim erneuten Öffnen wiederherstellen (falls Banner
+       durch Datenschutz-Link erneut geöffnet wird — future feature) */
+    (function restoreToggles() {
+      var saved = localStorage.getItem('playo_cookie_consent');
+      if (!saved) return;
+      var ta = document.getElementById('toggle-analytics');
+      var tm = document.getElementById('toggle-marketing');
+      if (!ta || !tm) return;
+      ta.checked = saved === 'accepted-all' || saved === 'accepted-analytics';
+      tm.checked = saved === 'accepted-all' || saved === 'accepted-marketing';
+    })();
+  </script>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       LEGAL MODALS — Datenschutz · Impressum · Kontakt · FAQ
+       ══════════════════════════════════════════════════════════════ -->
+
+  <!-- DATENSCHUTZ -->
+  <div class="legal-overlay" id="modal-datenschutz" role="dialog" aria-modal="true" aria-label="Datenschutz">
+    <div class="legal-panel">
+      <div class="legal-header">
+        <div class="legal-header-left">
+          <div class="legal-header-icon">
+            <i class="ph-duotone ph-shield-check"></i>
+          </div>
+          <div>
+            <div class="legal-title">Datenschutz</div>
+            <div class="legal-subtitle">Stand: 01. März 2026 · BOFF GmbH</div>
+          </div>
+        </div>
+        <button class="legal-close" onclick="closeModal('datenschutz')" aria-label="Schliessen">✕</button>
+      </div>
+      <div class="legal-body">
+
+        <div class="legal-box" style="margin-bottom:20px;">
+          PLAYO erhebt ausschliesslich Daten, die du aktiv eingibst. Kein Tracking, keine Werbung, keine Weitergabe an Dritte.
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Verantwortliche Stelle</div>
+          <div class="legal-row"><span class="legal-row-label">Betreiber</span><span class="legal-row-value">BOFF GmbH</span></div>
+          <div class="legal-row"><span class="legal-row-label">Adresse</span><span class="legal-row-value">Sickingerstrasse 10, 3014 Bern</span></div>
+          <div class="legal-row"><span class="legal-row-label">E-Mail</span><span class="legal-row-value"><a href="mailto:info@playo.ch">info@playo.ch</a></span></div>
+          <div class="legal-row"><span class="legal-row-label">UID</span><span class="legal-row-value">CHE-296.355.540</span></div>
+          <div class="legal-row"><span class="legal-row-label">Urheber</span><span class="legal-row-value">Yves Farine</span></div>
+          <div class="legal-row"><span class="legal-row-label">Rechtsrahmen</span><span class="legal-row-value">revDSG (CH) · EU-DSGVO</span></div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Was diese Website erhebt</div>
+          <div class="legal-check"><span class="legal-check-icon">✓</span><span><strong>Server-Logs:</strong> Beim Besuch werden IP-Adresse, Browsertyp und Seitenabruf vom Hosting-Provider kurzzeitig protokolliert. Diese Daten dienen ausschliesslich dem technischen Betrieb und werden automatisch gelöscht.</span></div>
+          <div class="legal-check"><span class="legal-check-icon">✓</span><span><strong>Google Analytics 4 (nur mit Zustimmung):</strong> Nach deiner Einwilligung verwenden wir Google Analytics 4, um anonymisierte Nutzungsstatistiken zu erheben (z.B. Seitenaufrufe, Verweildauer, Herkunftsland). IP-Adressen werden anonymisiert. Tracking findet <em>nicht</em> statt, wenn du ablehnst.</span></div>
+          <div class="legal-check"><span class="legal-check-icon red">✗</span><span><strong>Keine Werbe-Cookies:</strong> Wir nutzen kein Remarketing, kein Ad Targeting und keine Social-Media-Tracking-Pixel.</span></div>
+          <div class="legal-check"><span class="legal-check-icon red">✗</span><span>Kein Standort-Tracking, keine Verhaltensdaten, keine Weitergabe an kommerzielle Dritte.</span></div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Google Analytics 4 — Details</div>
+          <div class="legal-row"><span class="legal-row-label">Anbieter</span><span class="legal-row-value">Google Ireland Ltd., Dublin</span></div>
+          <div class="legal-row"><span class="legal-row-label">Zweck</span><span class="legal-row-value">Anonyme Nutzungsstatistiken</span></div>
+          <div class="legal-row"><span class="legal-row-label">Rechtsgrundlage</span><span class="legal-row-value">Einwilligung (Cookie-Banner)</span></div>
+          <div class="legal-row"><span class="legal-row-label">Datenspeicherung</span><span class="legal-row-value">14 Monate (GA-Standard)</span></div>
+          <div class="legal-row"><span class="legal-row-label">IP-Anonymisierung</span><span class="legal-row-value">Aktiviert</span></div>
+          <div class="legal-row"><span class="legal-row-label">Opt-out</span><span class="legal-row-value">Jederzeit im Cookie-Banner</span></div>
+          <div class="legal-box" style="margin-top:10px;">Google verarbeitet Daten gemäss eigener Datenschutzrichtlinie: <strong>policies.google.com/privacy</strong></div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Marketing-Cookies (nur mit Zustimmung)</div>
+          <p style="margin-bottom:10px;">Nach deiner Einwilligung können folgende Werbetechnologien eingesetzt werden:</p>
+          <div class="legal-row"><span class="legal-row-label">Meta Pixel</span><span class="legal-row-value">Facebook/Instagram Ads</span></div>
+          <div class="legal-row"><span class="legal-row-label">Google Ads</span><span class="legal-row-value">Conversion Tracking</span></div>
+          <div class="legal-row"><span class="legal-row-label">Zweck</span><span class="legal-row-value">Werbewirkung messen</span></div>
+          <div class="legal-row"><span class="legal-row-label">Rechtsgrundlage</span><span class="legal-row-value">Einwilligung (Cookie-Banner)</span></div>
+          <div class="legal-row"><span class="legal-row-label">Opt-out</span><span class="legal-row-value">Jederzeit im Cookie-Banner</span></div>
+          <div class="legal-box orange" style="margin-top:10px;">Marketing-Cookies sind aktuell noch nicht aktiv. Sie werden erst eingesetzt wenn du im Banner zustimmst <em>und</em> wir aktive Werbekampagnen schalten.</div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Daten in der PLAYO-App</div>
+          <p>Die vollständige Datenschutzerklärung für die App (Nutzerdaten, Kinderdaten, Sicherheitsmassnahmen, Betroffenenrechte) ist innerhalb der App unter <strong>Profil → Datenschutzrichtlinie</strong> einsehbar.</p>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Deine Rechte</div>
+          <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung und Beschwerde. Anfragen an: <a href="mailto:info@playo.ch" style="color:#7C3AED;font-weight:600;">info@playo.ch</a></p>
+          <div class="legal-box" style="margin-top:10px;">Beschwerden beim EDÖB: <strong>www.edoeb.admin.ch</strong></div>
+        </div>
+
+        <div class="legal-footer-note">PLAYO Datenschutzerklärung · Version 1.0 · BOFF GmbH · Urheber: Yves Farine</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPRESSUM -->
+  <div class="legal-overlay" id="modal-impressum" role="dialog" aria-modal="true" aria-label="Impressum">
+    <div class="legal-panel">
+      <div class="legal-header">
+        <div class="legal-header-left">
+          <div class="legal-header-icon">
+            <i class="ph-duotone ph-buildings"></i>
+          </div>
+          <div>
+            <div class="legal-title">Impressum</div>
+            <div class="legal-subtitle">Pflichtangaben gemäss Schweizer Recht</div>
+          </div>
+        </div>
+        <button class="legal-close" onclick="closeModal('impressum')" aria-label="Schliessen">✕</button>
+      </div>
+      <div class="legal-body">
+
+        <div class="legal-section">
+          <div class="legal-section-title">Betreiber dieser Website</div>
+          <div class="legal-contact-card">
+            <strong>BOFF GmbH</strong>
+            <p>Sickingerstrasse 10</p>
+            <p>3014 Bern, Schweiz</p>
+            <p style="margin-top:8px;"><a href="mailto:info@playo.ch">info@playo.ch</a></p>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Handelsregister</div>
+          <div class="legal-row"><span class="legal-row-label">Rechtsform</span><span class="legal-row-value">GmbH</span></div>
+          <div class="legal-row"><span class="legal-row-label">UID</span><span class="legal-row-value">CHE-296.355.540</span></div>
+          <div class="legal-row"><span class="legal-row-label">Domizil</span><span class="legal-row-value">Kanton Bern, Schweiz</span></div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Urheber &amp; Entwicklung</div>
+          <div class="legal-row"><span class="legal-row-label">App-Urheber</span><span class="legal-row-value">Yves Farine</span></div>
+          <div class="legal-row"><span class="legal-row-label">Konzept &amp; Design</span><span class="legal-row-value">BOFF GmbH</span></div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Haftungsausschluss</div>
+          <p>Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschliesslich deren Betreiber verantwortlich.</p>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Urheberrecht</div>
+          <p>Alle Inhalte dieser Website (Texte, Grafiken, Logos, Design) sind urheberrechtlich geschützt. Die Verwendung ohne ausdrückliche schriftliche Genehmigung der BOFF GmbH ist untersagt.</p>
+        </div>
+
+        <div class="legal-footer-note">© 2026 BOFF GmbH · Alle Rechte vorbehalten · Urheber: Yves Farine</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KONTAKT -->
+  <div class="legal-overlay" id="modal-kontakt" role="dialog" aria-modal="true" aria-label="Kontakt">
+    <div class="legal-panel">
+      <div class="legal-header">
+        <div class="legal-header-left">
+          <div class="legal-header-icon orange">
+            <i class="ph-duotone ph-envelope-simple"></i>
+          </div>
+          <div>
+            <div class="legal-title">Kontakt</div>
+            <div class="legal-subtitle">Wir freuen uns von dir zu hören</div>
+          </div>
+        </div>
+        <button class="legal-close" onclick="closeModal('kontakt')" aria-label="Schliessen">✕</button>
+      </div>
+      <div class="legal-body">
+
+        <div class="legal-section">
+          <div class="legal-contact-card">
+            <strong>BOFF GmbH</strong>
+            <p>Sickingerstrasse 10, 3014 Bern</p>
+            <p style="margin-top:10px;"><a href="mailto:info@playo.ch">info@playo.ch</a></p>
+          </div>
+        </div>
+
+        <div class="legal-section">
+          <div class="legal-section-title">Wofür kannst du uns kontaktieren?</div>
+          <div class="legal-check"><span class="legal-check-icon">✓</span><span>Allgemeine Fragen zur App</span></div>
+          <div class="legal-check"><span class="legal-check-icon">✓</span><span>Datenschutzanfragen und Auskunftsersuchen</span></div>
+          <div class="legal-check"><span class="legal-check-icon">✓</span><span>Technische Probleme oder Feedback</span></div>
+          <div class="legal-check"><span class="legal-check-icon">✓</span><span>Presse- und Partneranfragen</span></div>
+        </div>
+
+        <div class="legal-box green">
+          Wir antworten in der Regel innert 2 Werktagen.
+        </div>
+
+        <div class="legal-footer-note">BOFF GmbH · Sickingerstrasse 10 · 3014 Bern · info@playo.ch</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="legal-overlay" id="modal-faq" role="dialog" aria-modal="true" aria-label="FAQ">
+    <div class="legal-panel">
+      <div class="legal-header">
+        <div class="legal-header-left">
+          <div class="legal-header-icon">
+            <i class="ph-duotone ph-question"></i>
+          </div>
+          <div>
+            <div class="legal-title">Häufige Fragen</div>
+            <div class="legal-subtitle">FAQ · Frequently Asked Questions</div>
+          </div>
+        </div>
+        <button class="legal-close" onclick="closeModal('faq')" aria-label="Schliessen">✕</button>
+      </div>
+      <div class="legal-body">
+
+        <!-- Gruppe: Was ist PLAYO? -->
+        <div style="font-size:11px;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px;">Über PLAYO</div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Was ist PLAYO genau? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">PLAYO ist ein Spieltermin-Koordinationstool für Eltern. Du siehst auf einen Blick, wann die Kinder in deinem Netzwerk verfügbar sind — ohne WhatsApp-Gruppenrunden, ohne Hin-und-her. Du setzt den Status deiner Kinder («Heute frei», «Fussball-Training 15–17 Uhr»), und alle verbundenen Eltern sehen es sofort in Echtzeit. Der Nutzen entsteht ab dem ersten Kontakt, der der App beitritt.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Für wen ist PLAYO gemacht? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">PLAYO richtet sich an Eltern von Kindern zwischen 2 und 10 Jahren — egal in welcher Familiensituation. Ob berufstätige Eltern, Patchworkfamilien, Grosseltern oder Tagesmütter: jeder kann eingebunden werden. Die App ist auf Familien in der Schweiz ausgerichtet, funktioniert aber überall.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Auf welchen Geräten läuft PLAYO? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">PLAYO ist eine native App für <strong>iPhone (iOS)</strong> und <strong>Android</strong>. Du lädst die App direkt aus dem App Store oder Google Play — keine Installation über den Browser nötig.</div>
+        </div>
+
+        <!-- Gruppe: Kosten & Abo -->
+        <div style="font-size:11px;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:0.1em;margin:20px 0 8px;">Kosten & Abo</div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Was kostet PLAYO? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">PLAYO kostet <strong>CHF 9.90 pro Jahr</strong> — das sind weniger als 85 Rappen pro Monat, weniger als ein Kaffee. Du startest mit einem <strong>60-tägigen Trial mit vollem Zugriff</strong> — keine Kreditkarte, keine Einschränkungen. Wer eingeladen wird, erhält ebenfalls 60 Tage gratis ab dem eigenen Startdatum. Keine Werbung, keine versteckten Kosten, kein Datenverkauf.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Was passiert nach den 60 Tagen Trial? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">Nach dem Trial gibt es eine <strong>7-tägige Read-Only Schonfrist</strong> — du kannst noch alles sehen, aber keine neuen Status mehr setzen. So endet der Trial sanft, ohne dass dein Netzwerk sofort abbricht. Danach CHF 9.90/Jahr zum Weitermachen. Kein harter Cut, kein sozialer Druck auf eingeladene Kontakte — jede Person zahlt für sich selbst.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Muss ich eine Kreditkarte angeben um zu starten? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">Nein. Du registrierst dich einfach mit einer E-Mail-Adresse und startest sofort — kein Zahlungsmittel nötig. Die Bezahlung kommt erst am Ende des 60-tägigen Trials, wenn du weitermachen möchtest.</div>
+        </div>
+
+        <!-- Gruppe: Vernetzung -->
+        <div style="font-size:11px;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:0.1em;margin:20px 0 8px;">Vernetzung & Funktionen</div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Wie verbinde ich mich mit anderen Eltern? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">Du erzeugst einen persönlichen <strong>Einladungslink</strong> (gültig 48 Stunden) und schickst ihn per WhatsApp, SMS oder E-Mail an die Person, die du einladen möchtest. Die andere Person gibt den Code ein — und du bekommst eine Verbindungsanfrage. Erst wenn du aktiv bestätigst, entsteht die Verbindung. Ohne beidseitige Zustimmung sieht niemand irgendetwas.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Was ist der Unterschied zwischen einem Kontakt und einer Bezugsperson? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a"><strong>Kontakt</strong> = jemand der mit dir verbunden ist. Du siehst seinen Status, er sieht deinen — aber nur, wenn der Status auch für ihn freigegeben ist.<br><br><strong>Bezugsperson</strong> = ein Kontakt, dem du explizit Zugriff auf ein bestimmtes Kind gegeben hast. Eine Bezugsperson sieht und kann den Status dieses Kindes <em>immer</em> setzen — unabhängig von Sichtbarkeitseinstellungen. Das ist für Co-Eltern, Grosseltern, Tagesmütter gedacht.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Kann ich mehrere Kinder mit verschiedenen Personen teilen? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">Ja, völlig granular. Du kannst Kind A mit Person X teilen und Kind B mit Person Y — komplett unabhängig voneinander. Wer Zugang zu welchem Kind hat, siehst du jederzeit im Profil unter «Kinder verwalten». Zugriffe lassen sich mit einem Tap entziehen — der Effekt ist sofort.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Wie funktioniert PLAYO für Patchworkfamilien? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">PLAYO ist speziell für Patchworksituationen gebaut. Beispiel: Max Mustermann hat 3 Kinder aus einer früheren Beziehung, Eva Bernasconi hat 1 Kind. Beide verbinden sich — Max teilt seine 3 Kinder mit Eva, Eva teilt ihr Kind mit Max. Danach sehen und koordinieren beide alle 4 Kinder gemeinsam, mit vollen gegenseitigen Bearbeitungsrechten. Wer «primäres Elternteil» ist (wer das Kind angelegt hat), behält immer die letzte Kontrolle.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Kann ich steuern, wer einen bestimmten Status sieht? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">Ja. Beim Setzen eines Status wählst du die Sichtbarkeit: <strong>«Alle Kontakte»</strong> oder <strong>gezielt einzelne Personen</strong>. Wenn du z.B. willst, dass nur Familie Müller weiss, dass Norma heute verfügbar ist — wählst du nur Yvonne Müller aus. Alle anderen Kontakte sehen diesen Status nicht. Bezugspersonen (z.B. Co-Elternteil) sehen den Status immer — unabhängig von dieser Einstellung.</div>
+        </div>
+
+        <!-- Gruppe: Datenschutz -->
+        <div style="font-size:11px;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:0.1em;margin:20px 0 8px;">Datenschutz & Sicherheit</div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Wer kann meine Kinder sehen? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">Ausschliesslich Personen, die du explizit eingeladen hast. Es gibt kein öffentliches Profil, keinen öffentlichen Feed, keine Suche. Die Zugangskontrolle ist technisch in der Datenbank erzwungen (Row Level Security) — kein Code und kein Angreifer kann diese Regeln umgehen. Selbst der Kindname ist nur für direkt berechtigte Personen sichtbar.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Werden meine Daten verkauft oder für Werbung genutzt? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">Nein — und das ist eine Grundsatzentscheidung, keine Absichtserklärung. Das Geschäftsmodell von PLAYO basiert auf einem Jahresabonnement (CHF 9.90/Jahr), nicht auf Daten. PLAYO schaltet keine Werbung, gibt keine Daten an Dritte weiter und nutzt kein Profiling. Datenschutz ist die technische Grundlage der App, nicht ein nachträgliches Feature.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Was speichert PLAYO über meine Kinder? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">Bewusst so wenig wie möglich: nur den <strong>Vornamen</strong> und den von dir gesetzten <strong>Verfügbarkeitsstatus</strong>. Kein Foto, kein Geburtsdatum, keine Adresse, kein Schulname, kein Standort, keine Gesundheitsdaten. Das ist Datensparsamkeit by Design — nicht weil es zu aufwändig wäre, sondern weil es nicht nötig ist.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Was passiert, wenn ich mein Konto lösche? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">Alle deine Daten werden <strong>sofort und vollständig gelöscht</strong> — Profil, alle Kinder, alle Verbindungen, alle Zeitpläne, alle Benachrichtigungen. Das funktioniert über eine Kaskadenlöschung in der Datenbank: ein einziger Befehl löscht alles, was mit deinem Konto verknüpft ist. Die Löschung ist unwiderruflich. Im Profil unter «Konto löschen» jederzeit möglich — mit Passwortbestätigung als Sicherheitsschritt.</div>
+        </div>
+
+        <!-- Gruppe: Sprachen & Technik -->
+        <div style="font-size:11px;font-weight:700;color:#A78BFA;text-transform:uppercase;letter-spacing:0.1em;margin:20px 0 8px;">Sprachen & Technik</div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Welche Sprachen unterstützt PLAYO? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">PLAYO ist in <strong>über 15 Sprachen</strong> verfügbar: Deutsch, Französisch, Italienisch, Englisch, Spanisch, Portugiesisch, Russisch, Ukrainisch, Türkisch, Arabisch, Kroatisch, Bosnisch, Serbisch, Albanisch, Tigrinya und weitere. Jeder Kontakt kann die App in seiner eigenen Sprache nutzen — ihr müsst nicht dieselbe Sprache wählen.</div>
+        </div>
+
+        <div class="legal-faq-item">
+          <button class="legal-faq-q" onclick="toggleFaq(this)">
+            Wo werden meine Daten gespeichert? <span class="faq-arrow">▼</span>
+          </button>
+          <div class="legal-faq-a">Alle Daten werden auf Servern in der <strong>EU (Frankfurt, Deutschland)</strong> gespeichert — über Supabase, einen SOC 2 Type II zertifizierten Infrastrukturanbieter. Die Daten verlassen nicht den europäischen Rechtsraum. PLAYO untersteht dem Schweizer Datenschutzgesetz (revDSG) und orientiert sich ergänzend an der EU-DSGVO.</div>
+        </div>
+
+        <div class="legal-footer-note">Noch eine Frage? &nbsp;<a href="mailto:info@playo.ch" style="color:#7C3AED;font-weight:600;">info@playo.ch</a> — wir antworten innert 2 Werktagen.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ── Legal Modals ─────────────────────────────────────────────── */
+    function openModal(id) {
+      const overlay = document.getElementById('modal-' + id);
+      if (!overlay) return;
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // Trap focus / ESC
+      overlay._escHandler = (e) => { if (e.key === 'Escape') closeModal(id); };
+      document.addEventListener('keydown', overlay._escHandler);
+      // Click outside
+      overlay._clickHandler = (e) => { if (e.target === overlay) closeModal(id); };
+      overlay.addEventListener('click', overlay._clickHandler);
+    }
+
+    function closeModal(id) {
+      const overlay = document.getElementById('modal-' + id);
+      if (!overlay) return;
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      if (overlay._escHandler) document.removeEventListener('keydown', overlay._escHandler);
+      if (overlay._clickHandler) overlay.removeEventListener('click', overlay._clickHandler);
+    }
+
+    function toggleFaq(btn) {
+      const item = btn.closest('.legal-faq-item');
+      const isOpen = item.classList.contains('open');
+      // Close all others
+      document.querySelectorAll('.legal-faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
   </script>
 
 </body>
