@@ -1321,9 +1321,124 @@
 
     .cta-note { margin-top: 20px; font-size: 12px; color: var(--gray-500); }
 
+    /* ─── Waitlist Form ─────────────────────────────────────────── */
+    .waitlist-coming-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(124,58,237,0.09);
+      color: var(--violet);
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 13px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(124,58,237,0.18);
+      margin-bottom: 24px;
+    }
+
+    .waitlist-form { width: 100%; max-width: 480px; margin: 0 auto; }
+
+    .waitlist-input-wrap {
+      display: flex;
+      gap: 10px;
+      background: rgba(255,255,255,0.6);
+      border: 1.5px solid rgba(124,58,237,0.20);
+      border-radius: 16px;
+      padding: 6px 6px 6px 18px;
+      box-shadow: 0 2px 12px rgba(124,58,237,0.08);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .waitlist-input-wrap:focus-within {
+      border-color: var(--violet);
+      box-shadow: 0 2px 20px rgba(124,58,237,0.18);
+    }
+
+    .waitlist-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--gray-900);
+      outline: none;
+      min-width: 0;
+    }
+    .waitlist-input::placeholder { color: var(--gray-500); }
+
+    .waitlist-submit {
+      flex-shrink: 0;
+      background: var(--violet);
+      color: white;
+      border: none;
+      border-radius: 11px;
+      padding: 11px 22px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      white-space: nowrap;
+    }
+    .waitlist-submit:hover { background: #6d28d9; transform: translateY(-1px); }
+    .waitlist-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .waitlist-note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--gray-500);
+      text-align: center;
+    }
+
+    .waitlist-success {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: rgba(124,58,237,0.08);
+      border: 1px solid rgba(124,58,237,0.20);
+      border-radius: 16px;
+      padding: 18px 24px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--violet);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .waitlist-success.visible { display: flex; }
+
+    /* ─── Toast ─────────────────────────────────────────────────── */
+    #coming-soon-toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--gray-900);
+      color: white;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 13px 22px;
+      border-radius: 999px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #coming-soon-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     @media (max-width: 600px) {
       .cta-card { padding: 48px 28px; border-radius: 28px; }
       .store-badges { flex-direction: column; align-items: center; }
+      .waitlist-input-wrap { flex-direction: column; padding: 10px; gap: 8px; }
+      .waitlist-input { padding: 6px 8px; }
+      .waitlist-submit { width: 100%; padding: 13px; }
     }
 
     /* ─── FOOTER ────────────────────────────────────────────────── */
@@ -2396,10 +2511,10 @@
         <div class="cta-logo">P<span class="lk-L">L</span><span class="lk-A">A</span>Y<span class="accent">O</span></div>
         <h2 class="cta-title" data-t="ctaTitle">Weil deine Kinder<br><span style="color:var(--orange)">spielen</span> wollen.</h2>
         <p class="cta-subtitle" data-t="ctaSubtitle">Verbinde dich mit Eltern aus deiner Schulklasse, deinem Quartier oder Verein – und sieh auf einen Blick, wessen Kinder gerade spielen könnten. Für deine Kinder.</p>
-        <div class="store-badges">
+        <div class="store-badges" style="margin-bottom:24px;">
 
           <!-- Apple App Store -->
-          <a href="#" class="store-badge">
+          <a href="#" class="store-badge" onclick="showComingSoonToast();return false;">
             <svg width="22" height="27" viewBox="0 0 22 27" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M18.23 14.36c-.03-3.1 2.53-4.6 2.65-4.67-1.45-2.12-3.7-2.41-4.5-2.44-1.9-.2-3.74 1.13-4.71 1.13-.98 0-2.48-1.1-4.08-1.07-2.08.03-4.02 1.22-5.09 3.08-2.19 3.8-.56 9.4 1.56 12.47 1.05 1.51 2.28 3.2 3.9 3.14 1.57-.06 2.16-1.01 4.06-1.01 1.88 0 2.43 1.01 4.08.98 1.69-.03 2.76-1.53 3.79-3.05 1.2-1.74 1.69-3.44 1.71-3.53-.04-.02-3.34-1.28-3.37-5.04zM15.1 4.9C15.96 3.86 16.54 2.44 16.38.97c-1.27.05-2.83.85-3.73 1.87-.82.94-1.53 2.4-1.34 3.82 1.41.11 2.86-.72 3.79-1.76z" fill="white"/>
             </svg>
@@ -2410,7 +2525,7 @@
           </a>
 
           <!-- Google Play -->
-          <a href="#" class="store-badge">
+          <a href="#" class="store-badge" onclick="showComingSoonToast();return false;">
             <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M0.432 0.346C0.162 0.633 0 1.073 0 1.643v20.714c0 .57.162 1.01.432 1.297l.068.066 11.604-11.604v-.274L0.5.28l-.068.066z" fill="#4FC3F7"/>
               <path d="M15.968 15.98l-3.864-3.864v-.274l3.864-3.864.087.05 4.577 2.6c1.307.742 1.307 1.957 0 2.7l-4.577 2.6-.087.052z" fill="#FFCA28"/>
@@ -2424,7 +2539,18 @@
           </a>
 
         </div>
-        <p class="cta-note" data-t="ctaNote">Für Eltern, die ihre Kinder mehr spielen sehen wollen · 60 Tage kostenlos · Danach CHF 9.90 / Jahr</p>
+        <div class="waitlist-coming-badge">🚀 App erscheint bald — trag dich ein</div>
+
+        <form class="waitlist-form" id="waitlist-form" novalidate>
+          <div class="waitlist-input-wrap">
+            <input class="waitlist-input" type="email" placeholder="deine@email.com" required autocomplete="email" />
+            <button type="submit" class="waitlist-submit">Auf der Liste</button>
+          </div>
+          <p class="waitlist-note">Kostenlos · Kein Spam · Erste Info wenn die App live geht</p>
+        </form>
+        <div class="waitlist-success" id="waitlist-success">
+          🎉 Du bist dabei! Wir melden uns wenn PLAYO live geht.
+        </div>
       </div>
     </div>
   </section>
@@ -3065,6 +3191,53 @@
     })();
   </script>
 
+
+  <!-- ── COMING SOON TOAST ────────────────────────────────────── -->
+  <div id="coming-soon-toast">📱 App kommt bald — <a href="#cta" style="color:#A78BFA;text-decoration:underline;" onclick="document.getElementById('coming-soon-toast').classList.remove('show')">Warteliste</a></div>
+
+  <!-- ── WAITLIST + TOAST ─────────────────────────────────────── -->
+  <script>
+    // Toast für "App kommt bald"
+    function showComingSoonToast() {
+      var t = document.getElementById('coming-soon-toast');
+      t.classList.add('show');
+      setTimeout(function() { t.classList.remove('show'); }, 3500);
+    }
+
+    // Wartelisten-Formular → Formspree
+    (function() {
+      var form = document.getElementById('waitlist-form');
+      if (!form) return;
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var btn = form.querySelector('.waitlist-submit');
+        var email = form.querySelector('.waitlist-input').value;
+        btn.disabled = true;
+        btn.textContent = '…';
+        fetch('https://formspree.io/f/xeerjlla', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ email: email })
+        })
+        .then(function(r) {
+          if (r.ok) {
+            form.style.display = 'none';
+            form.previousElementSibling.style.display = 'none'; // badge
+            document.getElementById('waitlist-success').classList.add('visible');
+          } else {
+            btn.disabled = false;
+            btn.textContent = 'Auf der Liste';
+            alert('Etwas ist schiefgelaufen. Bitte versuch es nochmal.');
+          }
+        })
+        .catch(function() {
+          btn.disabled = false;
+          btn.textContent = 'Auf der Liste';
+          alert('Netzwerkfehler. Bitte versuch es nochmal.');
+        });
+      });
+    })();
+  </script>
 
   <!-- ── COOKIE CONSENT BANNER ────────────────────────────────── -->
   <div id="cookie-banner" role="dialog" aria-label="Cookie-Einstellungen">
