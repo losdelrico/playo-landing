@@ -2969,21 +2969,26 @@
       heroInner.style.transform = `translateY(${-standP * (isMob ? 18 : 25)}vh)`;
     }
 
-    function heroLoop() {
-      _pRaw = getScrollP();
-      // Auf Mobile kein Lerp – natives Momentum-Scrolling übernimmt die Glätte
-      const isMobScroll = window.innerWidth <= 768;
-      if (isMobScroll) {
-        _p = _pRaw;
-      } else {
-        _p += (_pRaw - _p) * 0.08;
-        if (Math.abs(_pRaw - _p) < 0.0003) _p = _pRaw;
+    if (window.innerWidth <= 768) {
+      // Mobile: passiver Scroll-Listener statt kontinuierlichem rAF-Loop
+      // → kein JS-Overhead im Hintergrund, kein Stottern beim Scroll-Start
+      function onHeroScroll() {
+        _p = getScrollP();
+        applyHero(_p);
       }
-      applyHero(_p);
+      window.addEventListener('scroll', onHeroScroll, { passive: true });
+      onHeroScroll(); // Initialzustand setzen
+    } else {
+      // Desktop: cinematischer Lerp-Loop
+      function heroLoop() {
+        _pRaw = getScrollP();
+        _p   += (_pRaw - _p) * 0.08;
+        if (Math.abs(_pRaw - _p) < 0.0003) _p = _pRaw;
+        applyHero(_p);
+        requestAnimationFrame(heroLoop);
+      }
       requestAnimationFrame(heroLoop);
     }
-
-    requestAnimationFrame(heroLoop);
 
     // ── O-Background Parallax ───────────────────────────────────────
     // Transform spans inside the layer (not the layer itself) to avoid
