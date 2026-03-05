@@ -1429,6 +1429,15 @@
       .features-grid { grid-template-columns: 1fr; }
       .forwhom-grid { grid-template-columns: 1fr; max-width: 480px; }
 
+      /* Showcase: kein Sticky-Clip auf Mobile */
+      #showcase-scroll-wrap { height: auto !important; }
+      #showcase {
+        position: relative;
+        height: auto;
+        overflow: visible;
+        align-items: flex-start;
+        padding: 80px 0;
+      }
       .showcase-inner { grid-template-columns: 1fr; gap: 48px; }
       .showcase-content { padding: 0 4px; }
       .showcase-content .section-title,
@@ -1697,17 +1706,17 @@
     .cookie-btn-decline {
       flex: 1;
       height: 36px;
-      background: transparent;
-      color: rgba(255,255,255,0.30);
-      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.70);
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: 10px;
       font-family: var(--font-body);
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: color 0.18s;
+      transition: background 0.18s;
     }
-    .cookie-btn-decline:hover { color: rgba(255,255,255,0.55); }
+    .cookie-btn-decline:hover { background: rgba(255,255,255,0.12); }
 
     /* ─── LEGAL MODALS ──────────────────────────────────────────── */
     .legal-overlay {
