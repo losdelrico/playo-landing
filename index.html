@@ -61,11 +61,18 @@
     })();
   </script>
 
-  <!-- GA4 Script (lädt immer, tracked aber nur nach Consent) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YHR44GPY3B"></script>
+  <!-- GA4: nach page load laden (kein Bandbreiten-Konflikt mit LCP) -->
   <script>
-    gtag('js', new Date());
-    gtag('config', 'G-YHR44GPY3B', { anonymize_ip: true });
+    window.addEventListener('load', function() {
+      var s = document.createElement('script');
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-YHR44GPY3B';
+      s.async = true;
+      document.head.appendChild(s);
+      s.onload = function() {
+        gtag('js', new Date());
+        gtag('config', 'G-YHR44GPY3B', { anonymize_ip: true });
+      };
+    });
   </script>
 
   <!-- Favicons -->
@@ -86,6 +93,9 @@
   <link rel="preload" as="style" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" media="print" onload="this.media='all'" />
   <noscript><link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" /></noscript>
+
+  <!-- Nunito 900 (Hero-Headline-Font) direkt preloaden – kein Swap-Delay -->
+  <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/nunito/v32/XRXI3I6Li01BKofiOc5wtlZ2di8HDBImdTQ3j6zdXWg.woff2" crossorigin />
 
   <!-- LCP-Bild preloaden (hero-login.webp) -->
   <link rel="preload" as="image" href="assets/screenshots/hero-login.webp" fetchpriority="high" />
