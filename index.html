@@ -69,16 +69,26 @@
   </script>
 
   <!-- Favicons -->
-  <link rel="icon" type="image/png" sizes="32x32"  href="assets/favicon-rounded.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-rounded.png" />
-  <link rel="apple-touch-icon"                      href="assets/favicon-rounded.png" />
+  <link rel="icon" type="image/png" sizes="32x32"  href="assets/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon-192.png" />
+  <link rel="apple-touch-icon"                      href="assets/favicon-192.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://unpkg.com" crossorigin />
 
-  <!-- Phosphor Icons – duotone (CSS-only, kein eval) -->
-  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+  <!-- Fonts: non-render-blocking via print trick -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" /></noscript>
+
+  <!-- Phosphor Icons – duotone (CSS-only, kein eval) – non-render-blocking -->
+  <link rel="preload" as="style" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" /></noscript>
+
+  <!-- LCP-Bild preloaden (hero-login.webp) -->
+  <link rel="preload" as="image" href="assets/screenshots/hero-login.webp" fetchpriority="high" />
 
   <style>
     /* ─── Reset & Base ─────────────────────────────────────────── */
@@ -2155,8 +2165,8 @@
         <div class="hero-phone-anchor" id="heroPhone">
           <div class="phone-glow"></div>
           <div class="iphone-frame-wrap">
-            <img class="hero-screen-img" src="assets/screenshots/hero-login.png" alt="PLAYO App" />
-            <img class="iphone-frame" src="assets/iphone-frame.avif" alt="" aria-hidden="true" />
+            <img class="hero-screen-img" src="assets/screenshots/hero-login.webp" alt="PLAYO App" fetchpriority="high" loading="eager" width="390" height="844" />
+            <img class="iphone-frame" src="assets/iphone-frame.avif" alt="" aria-hidden="true" loading="eager" width="1302" height="2649" />
           </div>
         </div>
 
@@ -2238,11 +2248,11 @@
       <!-- Left: sticky phone mockup -->
       <div class="features-phone-col">
         <div class="features-phone-frame">
-          <img class="feature-screen-img active" id="fscreen-0" src="assets/screenshots/feature-dashboard.png" alt="Dashboard">
-          <img class="feature-screen-img" id="fscreen-1" src="assets/screenshots/feature-contacts-invite.png" alt="Kontakt einladen">
-          <img class="feature-screen-img" id="fscreen-2" src="assets/screenshots/feature-guardian.png" alt="Bezugsperson einbinden">
-          <img class="feature-screen-img" id="fscreen-3" src="assets/screenshots/feature-privacy.png" alt="Sichtbarkeit">
-          <img class="iphone-frame" src="assets/iphone-frame.avif" alt="">
+          <img class="feature-screen-img active" id="fscreen-0" src="assets/screenshots/feature-dashboard.webp" alt="Dashboard" loading="lazy" width="1170" height="2532">
+          <img class="feature-screen-img" id="fscreen-1" src="assets/screenshots/feature-contacts-invite.webp" alt="Kontakt einladen" loading="lazy" width="390" height="844">
+          <img class="feature-screen-img" id="fscreen-2" src="assets/screenshots/feature-guardian.webp" alt="Bezugsperson einbinden" loading="lazy" width="390" height="844">
+          <img class="feature-screen-img" id="fscreen-3" src="assets/screenshots/feature-privacy.webp" alt="Sichtbarkeit" loading="lazy" width="390" height="844">
+          <img class="iphone-frame" src="assets/iphone-frame.avif" alt="" loading="lazy" width="1302" height="2649">
         </div>
       </div>
 
@@ -2295,8 +2305,8 @@
         <div class="fmc-slide">
           <div class="fmc-top"></div>
           <div class="fmc-phone">
-            <img class="fmc-screen" src="assets/screenshots/feature-dashboard.png" alt="">
-            <img class="fmc-frame" src="assets/iphone-frame.avif" alt="">
+            <img class="fmc-screen" src="assets/screenshots/feature-dashboard.webp" alt="" loading="lazy" width="1170" height="2532">
+            <img class="fmc-frame" src="assets/iphone-frame.avif" alt="" loading="lazy" width="1302" height="2649">
           </div>
           <div class="fmc-body">
             <div class="fmc-icon"><i class="ph-duotone ph-broadcast"></i></div>
@@ -2308,8 +2318,8 @@
         <div class="fmc-slide">
           <div class="fmc-top"></div>
           <div class="fmc-phone">
-            <img class="fmc-screen" src="assets/screenshots/feature-contacts-invite.png" alt="">
-            <img class="fmc-frame" src="assets/iphone-frame.avif" alt="">
+            <img class="fmc-screen" src="assets/screenshots/feature-contacts-invite.webp" alt="" loading="lazy" width="390" height="844">
+            <img class="fmc-frame" src="assets/iphone-frame.avif" alt="" loading="lazy" width="1302" height="2649">
           </div>
           <div class="fmc-body">
             <div class="fmc-icon"><i class="ph-duotone ph-key"></i></div>
@@ -2321,8 +2331,8 @@
         <div class="fmc-slide">
           <div class="fmc-top"></div>
           <div class="fmc-phone">
-            <img class="fmc-screen" src="assets/screenshots/feature-guardian.png" alt="">
-            <img class="fmc-frame" src="assets/iphone-frame.avif" alt="">
+            <img class="fmc-screen" src="assets/screenshots/feature-guardian.webp" alt="" loading="lazy" width="390" height="844">
+            <img class="fmc-frame" src="assets/iphone-frame.avif" alt="" loading="lazy" width="1302" height="2649">
           </div>
           <div class="fmc-body">
             <div class="fmc-icon"><i class="ph-duotone ph-user-plus"></i></div>
@@ -2334,8 +2344,8 @@
         <div class="fmc-slide">
           <div class="fmc-top"></div>
           <div class="fmc-phone">
-            <img class="fmc-screen" src="assets/screenshots/feature-privacy.png" alt="">
-            <img class="fmc-frame" src="assets/iphone-frame.avif" alt="">
+            <img class="fmc-screen" src="assets/screenshots/feature-privacy.webp" alt="" loading="lazy" width="390" height="844">
+            <img class="fmc-frame" src="assets/iphone-frame.avif" alt="" loading="lazy" width="1302" height="2649">
           </div>
           <div class="fmc-body">
             <div class="fmc-icon"><i class="ph-duotone ph-lock-simple"></i></div>
@@ -2463,15 +2473,15 @@
         <div class="showcase-phones reveal">
           <div class="showcase-phone-1">
             <div class="showcase-frame-lg">
-              <video id="showcase-profil-video" class="showcase-screen-img showcase-video-desktop" src="assets/profil-scroll.mp4?v=3" muted playsinline preload="auto"></video>
-            <img class="showcase-screen-img showcase-video-mobile" src="assets/screenshots/hero-login.png" alt="PLAYO App" />
-              <img class="iphone-frame" src="assets/iphone-frame.avif" alt="" aria-hidden="true" />
+              <video id="showcase-profil-video" class="showcase-screen-img showcase-video-desktop" src="assets/profil-scroll.mp4?v=3" muted playsinline preload="none"></video>
+            <img class="showcase-screen-img showcase-video-mobile" src="assets/screenshots/hero-login.webp" alt="PLAYO App" loading="lazy" width="390" height="844" />
+              <img class="iphone-frame" src="assets/iphone-frame.avif" alt="" aria-hidden="true" loading="lazy" width="1302" height="2649" />
             </div>
           </div>
           <div class="showcase-phone-2">
             <div class="showcase-frame-sm">
-              <img class="showcase-screen-img" src="assets/screenshots/showcase-contacts.png" alt="PLAYO Kontakte" />
-              <img class="iphone-frame" src="assets/iphone-frame.avif" alt="" aria-hidden="true" />
+              <img class="showcase-screen-img" src="assets/screenshots/showcase-contacts.webp" alt="PLAYO Kontakte" loading="lazy" width="390" height="844" />
+              <img class="iphone-frame" src="assets/iphone-frame.avif" alt="" aria-hidden="true" loading="lazy" width="1302" height="2649" />
             </div>
           </div>
         </div>
